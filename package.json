@@ -1,0 +1,25 @@
+{
+  "name": "jort",
+  "version": "1.0.0",
+  "description": "javascript oversimplified request tester",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zetlen/jort.git"
+  },
+  "keywords": [
+    "jort",
+    "test",
+    "tdd",
+    "mocha"
+  ],
+  "author": "zetlen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zetlen/jort/issues"
+  },
+  "homepage": "https://github.com/zetlen/jort#readme"
+}
