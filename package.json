@@ -4,6 +4,8 @@
   "description": "javascript oversimplified request tester",
   "main": "index.js",
   "scripts": {
+    "ci": "babel src/index.es6 -w -o index.js",
+    "preversion": "babel src/index.es6 -o index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,5 +23,9 @@
   "bugs": {
     "url": "https://github.com/zetlen/jort/issues"
   },
-  "homepage": "https://github.com/zetlen/jort#readme"
+  "homepage": "https://github.com/zetlen/jort#readme",
+  "dependencies": {
+    "connect": "^3.4.0",
+    "portfinder": "^0.4.0"
+  }
 }
