@@ -1,6 +1,6 @@
 ## javascript oversimplified request testing
 
-![jorts in space](http://i.imgur.com/D2gwbHN.png)
+<center>![jorts in space](http://i.imgur.com/D2gwbHN.png)</center>
 
 *just the right amount of coverage*
 
@@ -82,22 +82,22 @@ var emptyPocket = jort(
  - `status`: an integer for the HTTP status code to return. Default `200`
  - `headers`: an object of http headers to add or override, e.g. `{ 'Content-Type': 'text/html' }`
  - `delay`: an integer of ms to delay the first byte of the response. For testing timeouts. Default `0`
- - `use`: an array of [connect middleware](https://github.com/senchalabs/connect) to use
+ - `use`: an array of [connect middleware](https://github.com/senchalabs/connect) to use (or a single function to be used as one middleware)
+ - `leaveOpen`: by default, every jort will only serve one request. set this to `true` to leave the jort running until the process exits (or you turn it off manually using `jort.serve`.
 
-If the first argument is a JS object, jort will assume it should be serving json. If the first argument is a string or a stream, Jort will pass the string through unchanged (and you ought to provide a content type header in that case).
+If the first argument is a JS object, Jort will assume it should be serving JSON. If the first argument is a string, Jort will pass the string through unchanged (and you ought to provide a content type header in that case).
 
 #### oh, you want the actual server instance, not just its url?
 
 Not very jorty of you, but you can get this by running `jort.serve` instead of just `jort`. `jort.serve` has the exact same API as `jort`.
 
-The returned Promise will fulfill an object is a [connect](https://github.com/senchalabs/connect) app. The server has not been bound to a port yet, so you'll have to do that manually.
+The returned Promise will fulfill an object which is a Node [http.Server](https://nodejs.org/api/http.html#http_class_http_server). The server has already been bound to a port, so you don't have to do that manually. It'll also close by itself unless you passed `leaveOpen: true` as an option.
 
 ```js
 var bananaHammock = jort.serve("Bananas!", { headers: { 'Content-Type': 'text/bananas' } });
-bananaHammock.then(function(bananas) { bananas.listen(8099); });
-// url will now be http://localhost:8099/
+bananaHammock.then(function(bananas) { console.log(bananas.address()) });
+// { protocol: 'http:', address: '127.0.0.1', port: 8001 }
 ```
-
 
 #### but what about about routing? what about responding to GET, PUT, POST, and DELETE?
 That's probably not what you're testing. Your app knows how to use the right HTTP verbs, I'm sure. Don't sell yourself jort.
@@ -105,4 +105,4 @@ That's probably not what you're testing. Your app knows how to use the right HTT
 #### but my app isn't built in a way where i can change the URLs it calls!
 I agree that this is a problem, but it doesn't seem like a problem I can solve for you.
 
-![jorts in repose](http://i.imgur.com/LONbcQT.jpg)
+<center>![jorts in repose](http://i.imgur.com/LONbcQT.jpg)</center>
