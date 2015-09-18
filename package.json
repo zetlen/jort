@@ -4,9 +4,10 @@
   "description": "javascript oversimplified request tester",
   "main": "index.js",
   "scripts": {
-    "ci": "babel src/index.es6 -w -o index.js",
-    "preversion": "babel src/index.es6 -o index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "ci": "babel src/index.es6 -w -o index.js && npm test",
+    "preversion": "babel src/index.es6 -o index.js && npm test",
+    "test": "tape ./test/*.js | faucet",
+    "cov": "istanbul cover ./test/*.js"
   },
   "repository": {
     "type": "git",
@@ -27,5 +28,12 @@
   "dependencies": {
     "connect": "^3.4.0",
     "portfinder": "^0.4.0"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-tape-runner": "^1.2.0",
+    "faucet": "0.0.1",
+    "request": "^2.62.0",
+    "tape": "^4.2.0"
   }
 }
