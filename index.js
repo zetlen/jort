@@ -19,7 +19,6 @@ var _connect = require("connect");
 var _connect2 = _interopRequireDefault(_connect);
 
 var makeConf = function makeConf(payload, _ref) {
-  if (payload === undefined) payload = '';
   var _ref$status = _ref.status;
   var status = _ref$status === undefined ? 200 : _ref$status;
   var _ref$headers = _ref.headers;
@@ -84,15 +83,20 @@ var serve = function serve() {
           app.use(use);
         }
       }
+      var body = undefined;
+      if (typeof payload === "object") {
+        try {
+          body = JSON.stringify(payload);
+        } catch (e) {
+          return reject("Could not serialize supplied payload: " + e);
+        }
+      } else {
+        body = payload;
+      }
       app.use(function (req, res, next) {
         res.writeHead(status, headers);
-        if (typeof payload === "object") {
-          res.write(JSON.stringify(payload));
-        } else {
-          res.write(payload.toString());
-          res.end();
-          if (!leaveOpen) server.close();
-        }
+        res.end(body);
+        if (!leaveOpen) server.close();
         next();
       });
       resolve(server = app.listen(port));

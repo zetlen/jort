@@ -4,7 +4,7 @@ import url from "url";
 import portfinder from "portfinder";
 import connect from "connect";
 
-let makeConf = (payload = '', { status = 200, headers = {}, delay, use, leaveOpen }) => ({
+let makeConf = (payload, { status = 200, headers = {}, delay, use, leaveOpen }) => ({
   payload,
   status,
   headers,
@@ -47,15 +47,20 @@ let serve = function(_payload = '', options = {}) {
           app.use(use);
         }
       }
+      let body;
+      if (typeof payload === "object") {
+        try {
+          body = JSON.stringify(payload);
+        } catch(e) {
+          return reject("Could not serialize supplied payload: " + e);
+        }
+      } else {
+        body = payload;
+      }
       app.use((req, res, next) => {
         res.writeHead(status, headers);
-        if (typeof payload === "object") {
-          res.write(JSON.stringify(payload));
-        } else {
-          res.write(payload.toString());
-          res.end();
-          if (!leaveOpen) server.close();
-        }
+        res.end(body);
+        if (!leaveOpen) server.close();
         next();
       });
       resolve(server = app.listen(port));
