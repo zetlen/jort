@@ -4,10 +4,11 @@
   "description": "javascript oversimplified request tester",
   "main": "index.js",
   "scripts": {
-    "ci": "babel src/index.es6 -w -o index.js && npm test",
-    "preversion": "babel src/index.es6 -o index.js && npm test",
+    "build": "babel src/index.es6 -o index.js",
+    "pretest": "npm run build",
+    "preversion": "npm run cov",
     "test": "tape ./test/*.js | faucet",
-    "cov": "istanbul cover ./test/*.js"
+    "cov": "npm run build && istanbul cover ./test/*.js"
   },
   "repository": {
     "type": "git",
@@ -27,12 +28,13 @@
   "homepage": "https://github.com/zetlen/jort#readme",
   "dependencies": {
     "connect": "^3.4.0",
+    "lodash": "^3.10.1",
     "portfinder": "^0.4.0"
   },
   "devDependencies": {
     "babel": "^5.8.23",
-    "babel-tape-runner": "^1.2.0",
     "faucet": "0.0.1",
+    "istanbul": "^0.3.21",
     "request": "^2.62.0",
     "tape": "^4.2.0"
   }

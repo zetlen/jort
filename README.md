@@ -12,14 +12,14 @@ var assert  = require('assert');
 var request = require('request');
 var jort    = require('jort');
 
-jort({ 
-  totalCount: 2, 
-  items: ["daisy","duke"] 
+jort({
+  totalCount: 2,
+  items: ["daisy","duke"]
 }).then(function(twoItems) {
 
   request(twoItems, function(error, response, json) {
     assert.equal(json.totalCount, 2);
-    assert.equal(json.items[0], "daisy"); 
+    assert.equal(json.items[0], "daisy");
   });
 
 });
@@ -83,7 +83,7 @@ var emptyPocket = jort(
  - `headers`: an object of http headers to add or override, e.g. `{ 'Content-Type': 'text/html' }`
  - `delay`: an integer of ms to delay the first byte of the response. For testing timeouts. Default `0`
  - `use`: an array of [connect middleware](https://github.com/senchalabs/connect) to use (or a single function to be used as one middleware)
- - `leaveOpen`: by default, every jort will only serve one request. set this to `true` to leave the jort running until the process exits (or you turn it off manually using `jort.serve`.
+ - `leaveOpen`: by default, every jort will only serve one request. Set this to `true` to leave the jort running until you turn it off. Of course, you can't turn it off unless you've called `jort.serve` or `jort.serveSteps` to get an actual server handle, so this option is non-functional unless you called one of those methods. Your Jort takes care of you.
 
 If the first argument is a JS object, Jort will assume it should be serving JSON. If the first argument is a string, Jort will pass the string through unchanged (and you ought to provide a content type header in that case).
 
@@ -91,13 +91,89 @@ If the first argument is a JS object, Jort will assume it should be serving JSON
 
 Not very jorty of you, but you can get this by running `jort.serve` instead of just `jort`. `jort.serve` has the exact same API as `jort`.
 
-The returned Promise will fulfill an object which is a Node [http.Server](https://nodejs.org/api/http.html#http_class_http_server). The server has already been bound to a port, so you don't have to do that manually. It'll also close by itself unless you passed `leaveOpen: true` as an option.
+The returned Promise will fulfill an object which has two properties: `url` will be the url to call, just as if you'd called `jort`, and `server` will be the Node [http.Server](https://nodejs.org/api/http.html#http_class_http_server). The server has already been bound to a port, so you don't have to do that manually. It'll also close by itself unless you passed `leaveOpen: true` as an option.
 
 ```js
 var bananaHammock = jort.serve("Bananas!", { headers: { 'Content-Type': 'text/bananas' } });
-bananaHammock.then(function(bananas) { console.log(bananas.address()) });
+bananaHammock.then(function(bananas) { console.log(bananas.url, bananas.server.address()) });
+// http://127.0.0.1:8001
 // { protocol: 'http:', address: '127.0.0.1', port: 8001 }
 ```
+
+#### i'm testing something that places several calls in a row. i need to jort them all.
+
+If it get more complicated than this, you'll want to switch to just making your own express server, but ok, here goes. jort has a method called `steps` that will return a promise for a URL, just like jort, but this URL will respond a little differently. `jort.steps` takes an array of arguments that you might normally send to `jort`. 
+
+It yields a URL that will respond with the payloads of each of these arguments, in order, and different behavior based on the arguments. this must be an *array of arrays*, each sub-array representing the arguments that you might normally send directly to `jort()`. if you don't need a second `options` argument, then it can be an array of payloads; each item in the array will be interpreted as a single payload with no options if it is not an array, and a payload/options tuple if it is an array. Therefore, if you want your response to be a JSON array, it just needs to be an array wrapped in an array. Hey, you asked for a complicated feature in an oversimplified tool!
+
+```js
+jort.steps([
+  /* first request, for authentication */
+  [
+    /* payload */
+    {
+      authToken: 'fake-auth-token',
+      issued: (new Date()).toISOString()
+    },
+    /* options for first request */
+    {
+      delay: 1000,
+      headers: {
+        "X-Custom-Greeting": "Cheers!"
+      }
+    }
+  ],
+  /* second request, for metadata */
+  [
+    {
+      totalCount: 20000,
+      publishState: 'draft'
+    }
+    /* no options */
+  ],
+  /* third request, for data */
+  [
+    /* payload is array */
+    [
+      {
+        firstName: 'Sam',
+        lastName: 'Malone',
+        occupation: 'Barman'
+      },
+      {
+        firstName: 'Diane',
+        lastName: 'Chambers',
+        occupation: 'Student/Barmaid'
+      }
+    ],
+    {
+      delay : 5000
+    }
+  ]
+],
+/* global options that will apply to the server or to all requests*/
+{
+  // `leaveOpen: true` could go here
+}).then(function(url) {
+  // the url will respond three times, each time with the next payload, 
+  // and then disappear into the eldritch mist.
+
+  fetch(uri).then(function(res) {
+      assert(res.authToken);
+      return fetch(uri);
+  }).then(function(res) {
+      assert(res.totalCount === 10000);
+      return fetch(uri);
+  }).then(function(res) {
+      assert(res[o].firstName === "Sam");
+  });
+
+});
+```
+
+The `leaveOpen` option will, of course, not work for individual request options, but all other options will. The base options object you supply after the steps array will be applied to every step, but will be overridden by any options present for that step.
+
+You can call `jort.serveSteps` to get a `steps` implementation that will return a server, instead of just a url. It has the same API as `jort.steps`, of course.
 
 #### but what about about routing? what about responding to GET, PUT, POST, and DELETE?
 That's probably not what you're testing. Your app knows how to use the right HTTP verbs, I'm sure. Don't sell yourself jort.
