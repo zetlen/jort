@@ -1,5 +1,6 @@
 'use strict';
 
+import http from 'http';
 import url from 'url';
 import portfinder from 'portfinder';
 import connect from 'connect';
@@ -124,11 +125,16 @@ let serveSteps = function (confs, baseOptions) {
       nextStep();
 
       // and deliver
-      server = app.listen(port);
-      resolve({
+      let finish = () => resolve({
         server,
         url: getUrl(server)
       });
+      server = http.createServer(app);
+      if (baseConf.ipv6 === false) {
+        server.listen(port, '127.0.0.1', finish);
+      } else {
+        server.listen(port, finish);
+      }
     });
   });
 };

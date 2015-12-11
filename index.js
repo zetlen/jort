@@ -8,6 +8,10 @@ var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+var _http = require('http');
+
+var _http2 = _interopRequireDefault(_http);
+
 var _url = require('url');
 
 var _url2 = _interopRequireDefault(_url);
@@ -164,11 +168,18 @@ var serveSteps = function serveSteps(confs, baseOptions) {
       nextStep();
 
       // and deliver
-      server = app.listen(port);
-      resolve({
-        server: server,
-        url: getUrl(server)
-      });
+      var finish = function finish() {
+        return resolve({
+          server: server,
+          url: getUrl(server)
+        });
+      };
+      server = _http2['default'].createServer(app);
+      if (baseConf.ipv6 === false) {
+        server.listen(port, '127.0.0.1', finish);
+      } else {
+        server.listen(port, finish);
+      }
     });
   });
 };
