@@ -4,12 +4,13 @@
   "description": "javascript oversimplified request tester",
   "main": "index.js",
   "scripts": {
-    "build": "babel src/index.es6 -o index.js",
-    "pretest": "npm run build",
-    "preversion": "npm run cov",
+    "babel": "babel src/index.es6 -o index.js",
+    "ci": "npm run babel -- -w",
+    "pretest": "npm run babel",
     "test": "tape ./test/*.js",
-    "test-pretty": "tape ./test/*.js | faucet",
-    "cov": "npm run build && istanbul cover ./test/*.js"
+    "test-pretty": "npm test | faucet",
+    "cov": "npm run babel && istanbul cover ./test/*.js",
+    "preversion": "npm run cov"
   },
   "repository": {
     "type": "git",
