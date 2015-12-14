@@ -1,6 +1,6 @@
 {
   "name": "jort",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "javascript oversimplified request tester",
   "main": "index.js",
   "scripts": {
