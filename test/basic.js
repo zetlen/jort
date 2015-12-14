@@ -141,7 +141,7 @@ test('jort.serve', assert => {
 test('jort.serve force ipv4 address', assert => {
   assert.plan(1);
   jort.serve({ toserve: 'ipv4' }, { ipv6: false }).then(r => {
-    assert.equal(r.server.address().address, '0.0.0.0', 'url is ipv4 style');
+    assert.equal(r.server.address().address, '127.0.0.1', 'url is ipv4 style');
     r.server.close();
   }).catch(assert.fail);
 });
