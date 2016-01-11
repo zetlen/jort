@@ -85,6 +85,7 @@ var emptyPocket = jort(
  - `use`: an array of [connect middleware](https://github.com/senchalabs/connect) to use (or a single function to be used as one middleware)
  - `leaveOpen`: by default, every jort will only serve one request. Set this to `true` to leave the jort running until you turn it off. Of course, you can't turn it off unless you've called `jort.serve` or `jort.serveSteps` to get an actual server handle, so this option is non-functional unless you called one of those methods. Your Jort takes care of you.
  - `ipv6`: by default, jort will use ipv6 where available, so if your system supports ipv6, jort will produce urls that look like `http://[::]:8000/`. If you don't like this (or another library doesn't recognize this as a valid URL), then you can pass an explicit `ipv6:false` to force ipv4-style urls.
+ - `port`: by default, jort will find an open, unused port using [portfinder](https://www.npmjs.com/package/portfinder), unless you specify a port with this option; then it will use that port.
 
 If the first argument is a JS object, Jort will assume it should be serving JSON. If the first argument is a string, Jort will pass the string through unchanged (and you ought to provide a content type header in that case).
 
