@@ -178,7 +178,7 @@ var serveSteps = function serveSteps(confs, baseOptions) {
       if (baseConf.ipv6 === false) {
         server.listen(port, '127.0.0.1', finish);
       } else {
-        server.listen(port, finish);
+        server.listen(port, '::1', finish);
       }
     });
   });
