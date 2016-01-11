@@ -60,9 +60,15 @@ let serveSteps = function (confs, baseOptions) {
   let baseConf = makeConf(baseOptions);
 
   return new Promise((resolve, reject) => {
-
-    portfinder.getPort((err, port) => {
-      if (err) reject(err);
+    if (baseConf.port) {
+      doServe(baseConf.port);
+    } else {
+      portfinder.getPort((err, port) => {
+        if (err) reject(err);
+        doServe(port);
+      });
+    }
+    function doServe(port) {
       let app = connect();
       let server;
 
@@ -135,7 +141,7 @@ let serveSteps = function (confs, baseOptions) {
       } else {
         server.listen(port, '::1', finish);
       }
-    });
+    }
   });
 };
 

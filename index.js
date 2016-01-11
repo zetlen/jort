@@ -94,9 +94,15 @@ var serveSteps = function serveSteps(confs, baseOptions) {
   var baseConf = makeConf(baseOptions);
 
   return new Promise(function (resolve, reject) {
-
-    _portfinder2['default'].getPort(function (err, port) {
-      if (err) reject(err);
+    if (baseConf.port) {
+      doServe(baseConf.port);
+    } else {
+      _portfinder2['default'].getPort(function (err, port) {
+        if (err) reject(err);
+        doServe(port);
+      });
+    }
+    function doServe(port) {
       var app = (0, _connect2['default'])();
       var server = undefined;
 
@@ -180,7 +186,7 @@ var serveSteps = function serveSteps(confs, baseOptions) {
       } else {
         server.listen(port, '::1', finish);
       }
-    });
+    }
   });
 };
 
