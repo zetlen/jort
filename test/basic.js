@@ -138,6 +138,18 @@ test('jort.serve', assert => {
   }).catch(assert.fail);
 });
 
+test('jort.serve manual port', assert => {
+  assert.plan(1);
+  var port = process.env.PORT || 8999;
+  jort.serve(
+    { toserve: 'man' },
+    { port: port }
+  ).then(r => {
+    assert.equal(r.server.address().port, port, "port is " + port);
+    r.server.close();
+  }).catch(assert.fail);
+});
+
 test('jort.serve force ipv4 address', assert => {
   assert.plan(1);
   jort.serve({ toserve: 'ipv4' }, { ipv6: false }).then(r => {
